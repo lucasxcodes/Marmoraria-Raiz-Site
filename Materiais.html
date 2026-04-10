@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Materiais — Marmoraria Raiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --ouro: #d4af37;
+      --ouro-claro: #f1d27a;
+      --escuro: #1c1c1c;
+      --cinza-fundo: #f5f5f5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: #fafafa;
+      color: #222;
+    }
+
+    /* ── NAVBAR (idêntica ao index) ── */
+    nav.navbar-raiz {
+      background-color: var(--escuro);
+      color: white;
+      padding: 12px 24px;
+    }
+
+    .icones-redes img { transition: 0.3s; }
+    .icones-redes img:hover { transform: scale(1.2); opacity: 0.8; }
+
+    .linha-divisoria {
+      width: 120px;
+      height: 5px;
+      margin: 30px auto;
+      background: linear-gradient(90deg, var(--ouro), var(--ouro-claro));
+      border-radius: 10px;
+    }
+
+    /* ── HERO DA PÁGINA ── */
+    .hero-materiais {
+      background-color: var(--escuro);
+      color: white;
+      padding: 80px 20px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-materiais::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 20% 50%, rgba(212,175,55,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 50%, rgba(212,175,55,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-materiais h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      position: relative;
+    }
+
+    .hero-materiais h1 span {
+      color: var(--ouro);
+    }
+
+    .hero-materiais p {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.72);
+      max-width: 560px;
+      margin: 16px auto 0;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    /* ── FILTROS ── */
+    .filtros {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 40px 20px 10px;
+    }
+
+    .btn-filtro {
+      border: 1.5px solid #ccc;
+      background: white;
+      border-radius: 50px;
+      padding: 7px 22px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.25s;
+      color: #444;
+    }
+
+    .btn-filtro:hover,
+    .btn-filtro.ativo {
+      background-color: var(--ouro);
+      border-color: var(--ouro);
+      color: #fff;
+    }
+
+    /* ── GRID DE MATERIAIS ── */
+    .secao-materiais {
+      padding: 20px 40px 60px;
+    }
+
+    .card-material {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 3px 16px rgba(0,0,0,0.08);
+      transition: transform 0.35s, box-shadow 0.35s;
+      cursor: pointer;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-material:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+    }
+
+    .card-material .thumb {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.45s;
+    }
+
+    .card-material:hover .thumb {
+      transform: scale(1.06);
+    }
+
+    .thumb-wrapper {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .badge-tipo {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--ouro);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 50px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    .card-body-raiz {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-body-raiz h5 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--escuro);
+    }
+
+    .card-body-raiz p {
+      font-size: 0.88rem;
+      color: #666;
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      background: #f0f0f0;
+      color: #555;
+      border-radius: 50px;
+      padding: 3px 10px;
+    }
+
+    .btn-orcamento {
+      display: inline-block;
+      margin-top: 16px;
+      background-color: #25d366;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 9px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: 0.25s;
+      text-align: center;
+    }
+
+    .btn-orcamento:hover {
+      background-color: #1ebe5a;
+      color: #fff;
+    }
+
+    /* ── SEÇÃO COMO ESCOLHER ── */
+    .secao-dica {
+      background: var(--escuro);
+      color: white;
+      padding: 70px 20px;
+    }
+
+    .secao-dica h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      color: var(--ouro);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .secao-dica .subtitulo {
+      text-align: center;
+      color: rgba(255,255,255,0.6);
+      max-width: 500px;
+      margin: 0 auto 50px;
+      font-size: 0.95rem;
+    }
+
+    .dica-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 14px;
+      padding: 28px 24px;
+      text-align: center;
+      height: 100%;
+      transition: 0.3s;
+    }
+
+    .dica-card:hover {
+      background: rgba(212,175,55,0.08);
+      border-color: var(--ouro);
+    }
+
+    .dica-icone {
+      font-size: 2.2rem;
+      margin-bottom: 14px;
+    }
+
+    .dica-card h6 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ouro-claro);
+      margin-bottom: 8px;
+    }
+
+    .dica-card p {
+      font-size: 0.86rem;
+      color: rgba(255,255,255,0.62);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ── CONTATO ── */
+    .secao-contato {
+      background-color: var(--cinza-fundo);
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .botao-whatsapp {
+      font-size: 18px;
+      padding: 12px 20px;
+    }
+
+    /* ── CARDS OCULTOS (JS filtro) ── */
+    .card-col { transition: opacity 0.3s; }
+    .card-col.oculto { display: none; }
+    
+    /* AVISO */
+    
+    .secao-aviso {
+    background: #fff;
+    padding: 60px 20px;
+  }
+
+  .secao-aviso h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: #d4af37;
+    font-weight: 700;
+  }
+
+  .secao-aviso p {
+    max-width: 600px;
+    margin: auto;
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  </style>
+</head>
+
+<body>
+
+ <!-- ── NAVBAR ── -->
+  <nav class="navbar-raiz">
+    <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-2">
+        <img src="fotos/logo.png" width="54" class="rounded-circle">
+        <h4 class="m-0 text-white" style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; letter-spacing:0.03em;">Marmoraria Raiz</h4>
+      </div>
+      <div class="d-flex align-items-center gap-4 flex-wrap">
+        <span style="color:rgba(255,255,255,0.55); font-size:0.88rem;">Estrada do Gabinal, 1592 — Freguesia, RJ</span>
+        <div class="d-flex gap-3 icones-redes">
+          <a href="https://wa.me/5521972664573" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="26">
+          </a>
+          <a href="https://www.instagram.com/marmorariaraiz_/" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="26">
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-materiais">
+    <h1>Nossos <span>Materiais</span></h1>
+    <p>Trabalhamos com os melhores mármores e granitos do mercado, selecionados para garantir beleza, durabilidade e acabamento impecável em cada projeto.</p>
+  </section>
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <button class="btn-filtro ativo" onclick="filtrar('todos', this)">Todos</button>
+    <button class="btn-filtro" onclick="filtrar('marmore', this)">Mármore</button>
+    <button class="btn-filtro" onclick="filtrar('granito', this)">Granito</button>
+    <button class="btn-filtro" onclick="filtrar('quartzo', this)">Quartzo</button>
+    
+
+  </div>
+
+  <!-- GRID -->
+  <section class="secao-materiais container-fluid">
+    <div class="row g-4" id="grid-materiais">
+
+  <!-------------------------------------------->
+
+  <!--Granitos-->
+
+      <!-- GRANITO PRETO SÃO GABRIEL -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="granito">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">Granito</span>
+            <img class="thumb" src="fotos\granitos/preto.jpg" alt="Granito Preto">
+          </div>
+          <div class="card-body-raiz">
+            <h5> Preto São Gabriel</h5>
+            <p>Alta resistência e acabamento impecável. Muito utilizado em pias de cozinha, escadas e áreas de grande fluxo.</p>
+            <div class="card-tags">
+              <span class="tag">Cozinha</span>
+              <span class="tag">Escada</span>
+              <span class="tag">Alta durabilidade</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Granito Preto São Gabriel" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRANITO VERDE UBATUBA -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="granito">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">Granito</span>
+            <img class="thumb" src="fotos\granitos/verde.jpg" alt="Granito Verde Ubatuba">
+          </div>
+          <div class="card-body-raiz">
+            <h5> Verde Ubatuba</h5>
+            <p>Um dos granitos mais populares do Brasil. Fundo verde escuro com reflexos dourados e prateados. Robusto e versátil.</p>
+            <div class="card-tags">
+              <span class="tag">Pia</span>
+              <span class="tag">Bancada</span>
+              <span class="tag">Externo</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Granito Verde Ubatuba" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRANITO CINZA ANDORINHA -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="granito">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">granito</span>
+            <img class="thumb" src="fotos\granitos/cinza.jpg" alt="Granito Cinza Andorinha">
+          </div>
+          <div class="card-body-raiz">
+            <h5>Granito Cinza Andorinha</h5>
+            <p>Material resistente e versátil, com tonalidade cinza uniforme e discreta. 
+        Ideal para cozinhas, áreas externas e ambientes modernos, oferecendo praticidade e durabilidade no dia a dia.</p>
+            <div class="card-tags">
+              <span class="tag">Cozinha</span>
+              <span class="tag">Área externa</span>
+              <span class="tag">Alta resistência</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Granito Cinza Andorinha" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+       <!-- GRANITO BRANCO DALLAS -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="granito">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">Granito</span>
+            <img class="thumb" src="fotos\granitos/branco Dallas.jpg" alt="Granito Branco Dallas">
+          </div>
+          <div class="card-body-raiz">
+            <h5>Branco Dallas</h5>
+            <p>Fundo branco com veios e manchas em cinza e preto. Muito utilizado em cozinhas modernas como alternativa ao mármore, com maior durabilidade.</p>
+            <div class="card-tags">
+              <span class="tag">Cozinha</span>
+              <span class="tag">Durável</span>
+              <span class="tag">Moderno</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Granito Branco Dallas" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRANITO ITAUNAS -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="granito">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">Granito</span>
+            <img class="thumb" src="fotos\granitos/itaunas.jpg" alt="Granito Itaunas">
+          </div>
+          <div class="card-body-raiz">
+            <h5>Granito Itaunas</h5> 
+            <p>Material com tonalidade clara e uniforme, ideal para ambientes modernos e elegantes. O granito Itaúnas oferece alta resistência, fácil manutenção e excelente custo-benefício, sendo muito utilizado em cozinhas, banheiros e áreas internas.</p>
+            <div class="card-tags">
+              <span class="tag">Cozinha</span>
+              <span class="tag">Banheiro</span>
+              <span class="tag">Elegante</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Granito Itaunas" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRANITO PRETO VIA LACTEA -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="granito">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">Granito</span>
+            <img class="thumb" src="fotos\granitos/via lactea.jpg" alt="Granito Preto Via Lactea">
+          </div>
+          <div class="card-body-raiz">
+            <h5>Preto Via Lactea</h5>
+            <p>Granito de alto padrão com fundo preto intenso e veios brancos marcantes, que trazem sofisticação e exclusividade ao ambiente. Ideal para projetos modernos e elegantes, com excelente durabilidade e fácil manutenção.</p>
+            <div class="card-tags">
+              <span class="tag">Alto padrão</span>
+              <span class="tag">Cozinha</span>
+              <span class="tag">Sofisticado</span> 
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Granito Preto Via Lactea" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!------------------------------------------------------->
+      
+      <!--MARMORES-->
+
+      <!-- MARMORE BRANCO -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="marmore">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">marmore</span>
+            <img class="thumb" src="fotos/marmores/branco.jpg" alt="Bege Bahia">
+          </div>
+          <div class="card-body-raiz">
+            <h5>Marmore Branco</h5>
+            <p>Material sofisticado com tonalidade clara e elegante, muito utilizado em ambientes internos. O mármore branco proporciona um acabamento refinado e atemporal, ideal para banheiros, lavabos e projetos decorativos.</p>
+            <div class="card-tags">
+              <span class="tag">Luxo</span>
+              <span class="tag">Banheiro</span>
+              <span class="tag">Elegante</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Marmore Branco" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARMORE CARRARA -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="marmore">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">marmore</span>
+            <img class="thumb" src="fotos/marmores/carrara.jpg" alt="Bege Bahia">
+          </div>
+          <div class="card-body-raiz">
+            <h5>Marmore Carrara</h5>
+            <p>Mármore de origem nobre com fundo branco e veios acinzentados suaves, conhecido por sua elegância e sofisticação. Muito utilizado em ambientes internos, como banheiros e revestimentos decorativos, trazendo um acabamento refinado e atemporal.</p>
+            <div class="card-tags">
+              <span class="tag">Alto padrão</span>
+              <span class="tag">Banheiro</span>
+              <span class="tag">Sofisticado</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Marmore Carrara" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRANCO PRIME -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="marmore">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">marmore</span>
+      <img class="thumb" src="fotos/marmores/branco prime.jpg" alt="Branco Prime">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Branco Prime</h5>
+      <p>
+        Material de alto padrão com acabamento uniforme e sofisticado. O Branco Prime é ideal para projetos modernos, 
+        oferecendo beleza, resistência e fácil manutenção, muito utilizado em cozinhas e ambientes internos.
+      </p>
+      <div class="card-tags">
+        <span class="tag">Alto padrão</span>
+        <span class="tag">Cozinha</span>
+        <span class="tag">Moderno</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Branco Prime" class="btn-orcamento">
+        💬 Solicitar orçamento
+      </a>
+    </div>
+  </div>
+</div>
+
+      <!-- MARROM IMPERIAL -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="marmore">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">marmore</span>
+      <img class="thumb" src="fotos/marmores/marrom imperia.jpg" alt="Marrom Imperial">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Marrom Imperial</h5>
+      <p>
+        Granito elegante com tonalidade marrom intensa e veios marcantes, ideal para ambientes sofisticados. 
+        Possui alta resistência e durabilidade, sendo muito utilizado em cozinhas, escadas e áreas de grande circulação.
+      </p>
+      <div class="card-tags">
+        <span class="tag">Sofisticado</span>
+        <span class="tag">Cozinha</span>
+        <span class="tag">Alta resistência</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Marrom Imperial" class="btn-orcamento">
+        💬 Solicitar orçamento
+      </a>
+    </div>
+  </div>
+</div>
+
+      <!-- BEGE BAHIA -->
+      <div class="col-md-4 col-sm-6 card-col" data-tipo="marmore">
+        <div class="card-material">
+          <div class="thumb-wrapper">
+            <span class="badge-tipo">marmore</span>
+            <img class="thumb" src="fotos/marmores/bege bahia.jpg" alt="Bege Bahia">
+          </div>
+          <div class="card-body-raiz">
+            <h5>Bege Bahia</h5>
+            <p>Alta resistência e acabamento impecável. Muito utilizado em pias de cozinha, escadas e áreas de grande fluxo.</p>
+            <div class="card-tags">
+              <span class="tag">Cozinha</span>
+              <span class="tag">Escada</span>
+              <span class="tag">Alta durabilidade</span>
+            </div>
+            <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Bege Bahia" class="btn-orcamento">💬 Solicitar orçamento</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREMA MARFIL -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="marmore">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">Marmore</span>
+      <img class="thumb" src="fotos/marmores/crema marfil.jpg" alt="Crema Marfil">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Crema Marfil</h5>
+      <p>
+        Mármore de tonalidade bege suave com veios delicados, ideal para ambientes sofisticados e acolhedores. 
+        Muito utilizado em áreas internas, proporcionando elegância e um acabamento refinado.
+      </p>
+      <div class="card-tags">
+        <span class="tag">Elegante</span>
+        <span class="tag">Interno</span>
+        <span class="tag">Sofisticado</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Crema Marfil" class="btn-orcamento">
+        💬 Solicitar orçamento
+      </a>
+    </div>
+  </div>
+</div>
+
+<!------------------------------------------------>
+
+<!--QUARTZOS-->
+
+<!-- QUARTZO BRANCO -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="quartzo">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">Quartzo</span>
+      <img class="thumb" src="fotos/quartzos/quartzo branco.jpg" alt="Quartzo Branco">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Quartzo Branco</h5>
+      <p>Material sofisticado e versátil, ideal para cozinhas e banheiros. Possui alta resistência e baixa porosidade, garantindo durabilidade e fácil limpeza.</p>
+      <div class="card-tags">
+        <span class="tag">Alta resistência</span>
+        <span class="tag">Fácil limpeza</span>
+        <span class="tag">Uso interno</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Quartzo Branco" class="btn-orcamento">💬 Solicitar orçamento</a>
+    </div>
+  </div>
+</div>
+
+<!-- QUARTZO ESTRELAR -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="quartzo">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">Quartzo</span>
+      <img class="thumb" src="fotos/quartzos/branco estrelar.jpg" alt="Quartzo Estelar">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Quartzo Estelar</h5>
+      <p>Superfície moderna com partículas brilhantes que criam um efeito sofisticado. Ideal para projetos elegantes e ambientes contemporâneos.</p>
+      <div class="card-tags">
+        <span class="tag">Brilho sofisticado</span>
+        <span class="tag">Alta durabilidade</span>
+        <span class="tag">Design moderno</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Quartzo Estelar" class="btn-orcamento">💬 Solicitar orçamento</a>
+    </div>
+  </div>
+</div>
+
+<!-- CINZA NIMBUS -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="quartzo">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">Quartzo</span>
+      <img class="thumb" src="fotos/quartzos/cinza ninbus.jpg" alt="Cinza Nimbus">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Cinza Nimbus</h5>
+      <p>Tom cinza elegante com acabamento uniforme, perfeito para ambientes modernos e sofisticados. Combina com diversos estilos de decoração.</p>
+      <div class="card-tags">
+        <span class="tag">Elegante</span>
+        <span class="tag">Versátil</span>
+        <span class="tag">Uso interno</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Cinza Nimbus" class="btn-orcamento">💬 Solicitar orçamento</a>
+    </div>
+  </div>
+</div>
+
+<!-- VERMELHO ESTELAR -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="quartzo">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">Quartzo</span>
+      <img class="thumb" src="fotos/quartzos/vermelho stelar.jpg" alt="Vermelho Estelar">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Vermelho Estelar</h5>
+      <p>Material marcante com partículas brilhantes, ideal para projetos ousados e diferenciados. Perfeito para destacar ambientes.</p>
+      <div class="card-tags">
+        <span class="tag">Alto brilho</span>
+        <span class="tag">Design exclusivo</span>
+        <span class="tag">Ambientes modernos</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Vermelho Estelar" class="btn-orcamento">💬 Solicitar orçamento</a>
+    </div>
+  </div>
+</div>
+
+<!-- PRETO ESTELAR -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="quartzo">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">Quartzo</span>
+      <img class="thumb" src="fotos/quartzos/preto stellar.jpg" alt="Preto Estelar">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Preto Estelar</h5>
+      <p>Superfície escura com brilho sofisticado, ideal para projetos elegantes e modernos. Excelente escolha para bancadas de destaque.</p>
+      <div class="card-tags">
+        <span class="tag">Sofisticado</span>
+        <span class="tag">Alta resistência</span>
+        <span class="tag">Fácil manutenção</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Preto Estelar" class="btn-orcamento">💬 Solicitar orçamento</a>
+    </div>
+  </div>
+</div>
+
+<!-- CINZA NIEBLA -->
+<div class="col-md-4 col-sm-6 card-col" data-tipo="quartzo">
+  <div class="card-material">
+    <div class="thumb-wrapper">
+      <span class="badge-tipo">Quartzo</span>
+      <img class="thumb" src="fotos/quartzos/cinza niebla .jpg" alt="Cinza Niebla">
+    </div>
+    <div class="card-body-raiz">
+      <h5>Cinza Niebla</h5>
+      <p>Tom suave e moderno, ideal para ambientes clean e sofisticados. Excelente opção para quem busca elegância discreta.</p>
+      <div class="card-tags">
+        <span class="tag">Clean</span>
+        <span class="tag">Moderno</span>
+        <span class="tag">Versátil</span>
+      </div>
+      <a href="https://wa.me/5521972664573?text=Olá, vim pelo site e tenho interesse no Cinza Niebla" class="btn-orcamento">💬 Solicitar orçamento</a>
+    </div>
+  </div>
+</div>
+
+     
+
+    </div><!-- /row -->
+  </section>
+
+  <div class="linha-divisoria"></div>
+
+  <!-- COMO ESCOLHER -->
+  <section class="secao-dica">
+    <h2>Como escolher o material certo?</h2>
+    <p class="subtitulo">Cada pedra tem suas características. Conheça os pontos principais para tomar a melhor decisão.</p>
+
+    <div class="container">
+      <div class="row g-4">
+
+        <div class="col-md-3 col-sm-6">
+          <div class="dica-card">
+            <div class="dica-icone">🏠</div>
+            <h6>Ambiente</h6>
+            <p>Cozinhas exigem materiais resistentes a manchas e calor. Banheiros e lavabos permitem escolhas mais delicadas e sofisticadas.</p>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+          <div class="dica-card">
+            <div class="dica-icone">💧</div>
+            <h6>Manutenção</h6>
+            <p>Granitos são mais resistentes e fáceis de manter. Mármores exigem selagem periódica para preservar o brilho e evitar manchas.</p>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+          <div class="dica-card">
+            <div class="dica-icone">🎨</div>
+            <h6>Estética</h6>
+            <p>Veios marcantes valorizam ambientes modernos e autorais. Pedras mais neutras combinam com estilos clássicos e minimalistas.</p>
+          </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+          <div class="dica-card">
+            <div class="dica-icone">💬</div>
+            <h6>Fale Conosco</h6>
+            <p>Com 25 anos de experiência, nossa equipe orienta você gratuitamente na escolha ideal para o seu projeto.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!--AVISO-->
+
+  <section class="secao-aviso text-center">
+  <div class="container">
+
+    <h3>Não encontrou o material que procura?</h3>
+
+    <p class="mt-3">
+      Fique tranquilo! Trabalhamos com uma grande variedade de materiais sob encomenda.
+      Caso não tenha encontrado o que deseja, entre em contato conosco e solicite seu orçamento.
+    </p>
+
+  </div>
+</section>
+
+  <!-- CONTATO -->
+  <section class="secao-contato">
+    <h2>Gostou de algum material?</h2>
+    <p class="text-muted mb-4">Entre em contato agora e solicite seu orçamento sem compromisso.</p>
+    <a href="https://wa.me/5521972664573" class="btn btn-success botao-whatsapp">
+      Chamar no WhatsApp
+    </a>
+    <div class="mt-4">
+      <a href="index.html" style="color: #999; font-size: 0.9rem;">← Voltar para a página inicial</a>
+    </div>
+  </section>
+
+  <script>
+    function filtrar(tipo, btn) {
+      // atualiza botão ativo
+      document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+
+      // mostra/oculta cards
+      document.querySelectorAll('.card-col').forEach(card => {
+        if (tipo === 'todos' || card.dataset.tipo === tipo) {
+          card.classList.remove('oculto');
+        } else {
+          card.classList.add('oculto');
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
